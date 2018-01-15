@@ -284,7 +284,7 @@ def fetch_check_all():
 class ProxyDatabase:
     def __init__(self):
         '''
-        初始化数据库连接和游标，创建表proxies：只有1列IP_PORT
+        初始化数据库连接和游标，创建表proxies：IP_PORT和valid，2个字段
         '''
         self.conn = sqlite3.connect('proxy.db')
         self.cur = self.conn.cursor()
