@@ -19,6 +19,7 @@ Python http_proxy.py
 
 # About sqlite3
 没有做防注入，sqlite3在execute相关sql时似乎不能直接(sql, (...))，后来就懒得做了。
+
 表名self.db_name是proxies
 包含2个字段：IP_PORT和valid
 IP_PORT: ip代理，格式如127.0.0.1:8080，使用时还需要手动在前面加上http://
