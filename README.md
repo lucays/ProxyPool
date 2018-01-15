@@ -14,7 +14,9 @@ pip install requests
 pip install lxml
 ```
 然后在命令行的当前目录下运行
+```
 Python http_proxy.py
+```
 即可
 
 # About sqlite3
