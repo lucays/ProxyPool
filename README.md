@@ -8,16 +8,17 @@ fetch free ip-proxies
 
 安装好下面的软件包和模块
 
-- Python3.6
-- requests
+- Python3.6+
 - scrapy
-- flask
 - redis
+- aioredis
 - aiohttp
-- gunicorn
   
 配置好config.py的redis地址和密码
 
-运行`python run_gunicorn.py`和`python getter.py`即可。
+在aioweb中运行`python main.py`即可。
 
-请求`http://127.0.0.1:5000`的`get_one`路径可以获得随机代理。
+也可以用gunicorn，在这个目录下运行
+`gunicorn main:app_factory --bind localhost:8080 --worker-class aiohttp.GunicornWebWorker`
+
+请求`http://127.0.0.1:8080/get_one`即可获得随机代理。
