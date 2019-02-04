@@ -18,5 +18,5 @@ class ProxiesPipeline(object):
     def process_item(self, item, spider):
         proxy = item['proxy']
         if not self.conn.zscore(REDIS_KEY, proxy):
-            self.conn.zadd(REDIS_KEY, INIT_SCORE, proxy)
+            self.conn.zadd(REDIS_KEY, {proxy: INIT_SCORE})
         return item
