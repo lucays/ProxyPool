@@ -25,6 +25,7 @@ class cd:
 
 
 class ProxyTester:
+    sucess_count = 0
 
     async def proxy_test(self, app, session, proxy):
         real_proxy = 'http://' + proxy
@@ -33,6 +34,7 @@ class ProxyTester:
                 if resp.status == 200:
                     logger.info(f'{proxy} test useful')
                     await app['redis_conn'].score2max(proxy)
+                    self.sucess_count += 1
                 else:
                     logger.info(f'{proxy} status code error: {resp.status}')
                     await app['redis_conn'].decrease(proxy)
@@ -46,9 +48,10 @@ class ProxyTester:
             if len(proxies) > BATCH_TEST_SIZE:
                 for i in range(0, len(proxies), BATCH_TEST_SIZE):
                     test_proxies = proxies[i: i+BATCH_TEST_SIZE]
-                    asyncio.gather(*[self.proxy_test(app, session, proxy) for proxy in test_proxies])
+                    await asyncio.gather(*[self.proxy_test(app, session, proxy) for proxy in test_proxies])
             else:
-                asyncio.gather(*[self.proxy_test(app, session, proxy) for proxy in proxies])
+                await asyncio.gather(*[self.proxy_test(app, session, proxy) for proxy in proxies])
+        return self.sucess_count
 
 
 async def redis_engine(app):
@@ -58,6 +61,8 @@ async def redis_engine(app):
 
 
 async def crawl_proxies(app):
+    proxies_count = await app['redis_conn'].get_count()
+    logger.info(f"now there are {proxies_count} proxies.")
     while True:
         await asyncio.sleep(3)
         with cd("../"):
@@ -77,18 +82,20 @@ async def crawl_proxies(app):
                 except subprocess.TimeoutExpired as e:
                     logger.error(f'{spider} crawl TIMEOUT!')
                 await asyncio.sleep(3)
-        await asyncio.sleep(3600*3)
+        proxies_count = await app['redis_conn'].get_count()
+        await asyncio.sleep(3600*0.5)
 
 
 async def proxies_test(app):
     while True:
-        # await asyncio.sleep(3600*3)
+        await asyncio.sleep(0.1)
         conn = app['redis_conn']
         proxies = await conn.get_all()
-        proxytester = ProxyTester()
         logger.info(f"proxies count: {len(proxies)}")
-        await proxytester.all_proxies_test(app, proxies)
-        await asyncio.sleep(3600*5)
+        proxytester = ProxyTester()
+        sucess_count = await proxytester.all_proxies_test(app, proxies)
+        logger.info(f"proxies valid count: {sucess_count}")
+        await asyncio.sleep(3600*0.2)
 
 
 async def background_tasks(app):
@@ -96,6 +103,4 @@ async def background_tasks(app):
     app['proxies_test'] = app.loop.create_task(proxies_test(app))
     yield
     app['proxies_test'].cancel()
-    # await app['proxies_test']
     app['crawl_proxies'].cancel()
-    # await app['crawl_proxies']
