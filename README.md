@@ -14,7 +14,7 @@ fetch free ip-proxies
 - aioredis
 - aiohttp
   
-配置好config.py的redis地址和密码
+配置好aioweb/config.py的redis地址和密码
 
 在aioweb中运行`python main.py`即可。
 
