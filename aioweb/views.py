@@ -15,11 +15,12 @@ class GetOne(web.View):
 
     async def delete(self):
         post = await self.request.post()
-        proxy = post['proxy']
+        proxies = post.values()
         conn = self.request.app['redis_conn']
-        await conn.decrease(proxy)
-        logger.info(f"{proxy} decreased")
-        return web.Response(text=f'{proxy} decreased')
+        for proxy in proxies:
+            await conn.decrease(proxy)
+            logger.info(f"{proxy} decreased")
+        return web.Response(text=f'{proxies} decreased')
 
 
 @routes.view('/count')
