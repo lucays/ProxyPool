@@ -21,4 +21,31 @@ fetch free ip-proxies
 也可以用gunicorn，在这个目录下运行
 `gunicorn main:app_factory --bind localhost:8080 --worker-class aiohttp.GunicornWebWorker`
 
-请求`http://127.0.0.1:8080/get_one`即可获得随机代理。
+请求`http://127.0.0.1:8080/proxy`即可获得随机代理。
+
+```python
+
+'''
+please set redis address & password in aioweb/config.py
+then run:
+
+python main.py
+
+now you can use the following code to get proxy and delete proxy.
+'''
+
+import requests
+
+# get proxy
+url = 'http://127.0.0.1:8080/proxy'
+proxy = requests.get(url).text
+
+# delete proxy
+data = {'proxy': proxy}  # use 'data' or other key name also can delete.
+resp = requests.delete(url, data=data)
+
+# get count
+url = 'http://127.0.0.1:8080/count'
+count = requests.get(url).text
+print(count)
+```
