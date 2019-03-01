@@ -10,7 +10,6 @@ fetch free ip-proxies
 
 - Python3.6+
 - scrapy
-- redis
 - aioredis
 - aiohttp
   
@@ -40,12 +39,18 @@ import requests
 url = 'http://127.0.0.1:8080/proxy'
 proxy = requests.get(url).text
 
-# delete proxy
-data = {'proxy': proxy}  # use 'data' or other key name also can delete.
-resp = requests.delete(url, data=data)
-
 # get count
 url = 'http://127.0.0.1:8080/count'
 count = requests.get(url).text
-print(count)
+
+# delete proxy
+handle_url = f"http://127.0.0.1:8080/proxy/{proxy}"
+resp = requests.delete(handle_url)
+
+# add proxy
+resp = requests.post(handle_url))
+
+# set proxy's score to max
+resp = requests.put(handle_url)
+
 ```
