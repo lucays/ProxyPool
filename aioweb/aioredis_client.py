@@ -2,10 +2,13 @@
 # sudo vi /etc/redis/redis.conf
 # sudo /etc/init.d/redis-server restart
 # redis-cli -a redis321
+import sys
 import asyncio
 import random
 
 import aioredis
+
+sys.path.append("..")
 
 from config import REDIS_HOST, REDIS_PASSWORD, REDIS_KEY, MAX_SCORE, MIN_SCORE, INIT_SCORE
 
@@ -52,6 +55,9 @@ class RedisClient:
             return await self.conn.zincrby(REDIS_KEY, -1, proxy)
         else:
             return await self.conn.zrem(REDIS_KEY, proxy)
+
+    async def delete(self, proxy):
+        return await self.conn.zrem(REDIS_KEY, proxy)
 
     async def is_exist(self, proxy):
         '''

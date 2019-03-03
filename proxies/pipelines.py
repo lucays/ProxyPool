@@ -4,19 +4,22 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-import redis
+import asyncio
 
-from aioweb.config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, REDIS_KEY, INIT_SCORE
+from aioweb.aioredis_client import RedisClient
 
 
 class ProxiesPipeline(object):
 
     def __init__(self):
-        self.pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
-        self.conn = redis.StrictRedis(connection_pool=self.pool)
+        pass
+
+    async def add(self, proxy):
+        conn = await RedisClient.create()
+        await conn.add(proxy)
 
     def process_item(self, item, spider):
         proxy = item['proxy']
-        if not self.conn.zscore(REDIS_KEY, proxy):
-            self.conn.zadd(REDIS_KEY, {proxy: INIT_SCORE})
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.add(proxy))
         return item
