@@ -65,6 +65,12 @@ class RedisClient:
         '''
         return not await self.conn.zscore(REDIS_KEY, proxy) is None
 
+    async def get_score(self, proxy):
+        '''
+        获取分数
+        '''
+        return await self.conn.zscore(REDIS_KEY, proxy)
+
     async def score2max(self, proxy):
         '''
         把代理分数设为MAX_SCORE

@@ -33,15 +33,15 @@ class ProxyTester:
             async with session.get(TEST_URL, headers=HEADERS, proxy=real_proxy, timeout=TIMEOUT) as resp:
                 if resp.status == 200:
                     logger.info(f'{proxy} test useful')
-                    await app['redis_conn'].score2max(proxy)
+                    await app['redis_client'].score2max(proxy)
                     self.sucess_count += 1
                 else:
                     logger.info(f'{proxy} status code error: {resp.status}')
-                    await app['redis_conn'].decrease(proxy)
+                    await app['redis_client'].decrease(proxy)
                 await asyncio.sleep(0.5)
         except Exception as e:
             logger.info(f'{proxy} test invalid')
-            await app['redis_conn'].decrease(proxy)
+            await app['redis_client'].decrease(proxy)
 
     async def all_proxies_test(self, app, proxies):
         async with aiohttp.ClientSession() as session:
@@ -55,13 +55,13 @@ class ProxyTester:
 
 
 async def redis_engine(app):
-    app['redis_conn'] = await RedisClient.create()
+    app['redis_client'] = await RedisClient.create()
     yield
-    await app['redis_conn'].close()
+    await app['redis_client'].close()
 
 
 async def crawl_proxies(app):
-    proxies_count = await app['redis_conn'].get_count()
+    proxies_count = await app['redis_client'].get_count()
     logger.info(f"now there are {proxies_count} proxies.")
     while True:
         await asyncio.sleep(3)
@@ -82,15 +82,15 @@ async def crawl_proxies(app):
                 except subprocess.TimeoutExpired as e:
                     logger.error(f'{spider} crawl TIMEOUT!')
                 await asyncio.sleep(3)
-        proxies_count = await app['redis_conn'].get_count()
+        proxies_count = await app['redis_client'].get_count()
         await asyncio.sleep(3600*0.5)
 
 
 async def proxies_test(app):
     while True:
         await asyncio.sleep(0.1)
-        conn = app['redis_conn']
-        proxies = await conn.get_all()
+        redis_client = app['redis_client']
+        proxies = await redis_client.get_all()
         logger.info(f"proxies count: {len(proxies)}")
         proxytester = ProxyTester()
         sucess_count = await proxytester.all_proxies_test(app, proxies)
