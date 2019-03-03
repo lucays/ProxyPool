@@ -12,7 +12,7 @@ fetch free ip-proxies
 - scrapy
 - aioredis
 - aiohttp
-  
+
 配置好aioweb/config.py的redis地址和密码
 
 在aioweb中运行`python main.py`即可。
@@ -21,6 +21,8 @@ fetch free ip-proxies
 `gunicorn main:app_factory --bind localhost:8080 --worker-class aiohttp.GunicornWebWorker`
 
 请求`http://127.0.0.1:8080/proxy`即可获得随机代理。
+
+# Example Codes
 
 ```python
 
@@ -37,11 +39,11 @@ import requests
 
 # get proxy
 url = 'http://127.0.0.1:8080/proxy'
-proxy = requests.get(url).text
+proxy = requests.get(url).json()['proxy']
 
 # get count
 url = 'http://127.0.0.1:8080/count'
-count = requests.get(url).text
+count = requests.get(url).json()['count']
 
 # delete proxy
 handle_url = f"http://127.0.0.1:8080/proxy/{proxy}"
