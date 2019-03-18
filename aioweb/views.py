@@ -62,8 +62,7 @@ class HandleProxy(web.View):
 
     async def delete(self):
         '''
-        代理分数-1
-        如果分数小于MIN_SCORE，移除
+        移除代理
         '''
         proxy = self.request.match_info['proxy']
         redis_client = self.request.app['redis_client']

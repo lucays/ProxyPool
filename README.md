@@ -50,7 +50,7 @@ handle_url = f"http://127.0.0.1:8080/proxy/{proxy}"
 resp = requests.delete(handle_url)
 
 # add proxy
-resp = requests.post(handle_url))
+resp = requests.post(handle_url)
 
 # set proxy's score to max
 resp = requests.put(handle_url)
