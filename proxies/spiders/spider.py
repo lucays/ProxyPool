@@ -81,19 +81,6 @@ class Data5uSpider(scrapy.Spider):
             yield item
 
 
-class QiyunSpider(scrapy.Spider):
-    name = 'qiyun'
-    start_urls = [f'http://www.qydaili.com/free/?action=china&page={i}' for i in range(1, 3)]
-
-    def parse(self, response):
-        ips = [i for i in response.xpath('//td[@data-title="IP"]/text()').extract()]
-        ports = [i for i in response.xpath('//td[@data-title="PORT"]/text()').extract()]
-        for ip, port in zip(ips, ports):
-            item = ProxiesItem()
-            item['proxy'] = f'{ip}:{port}'
-            yield item
-
-
 class _89Spider(scrapy.Spider):
     name = '_89'
     start_urls = [f"http://www.89ip.cn/index_{i}.html" for i in range(1, 3)]
@@ -101,19 +88,6 @@ class _89Spider(scrapy.Spider):
     def parse(self, response):
         ips = [i.strip() for i in response.xpath('//table[@class="layui-table"]/tbody/tr/td[1]/text()').extract()]
         ports = [i.strip() for i in response.xpath('//table[@class="layui-table"]/tbody/tr/td[2]/text()').extract()]
-        for ip, port in zip(ips, ports):
-            item = ProxiesItem()
-            item['proxy'] = f'{ip}:{port}'
-            yield item
-
-
-class SuperfastSpider(scrapy.Spider):
-    name = 'superfast'
-    start_urls = [f'http://www.superfastip.com/welcome/freeip/{i}' for i in range(1, 3)]
-
-    def parse(self, response):
-        ips = response.xpath('//table[@class="table table-striped"]/tbody/tr/td[1]/text()').extract()
-        ports = [i.strip() for i in response.xpath('//table[@class="table table-striped"]/tbody/tr/td[2]/text()').extract()]
         for ip, port in zip(ips, ports):
             item = ProxiesItem()
             item['proxy'] = f'{ip}:{port}'
